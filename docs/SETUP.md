@@ -105,5 +105,8 @@ Set these under Settings → Environment Variables, then redeploy:
 | `DJ_AGENT_NAME` | optional, default `dial-in-dj` |
 | `DJ_TOKENS_PER_IP_PER_HOUR` | optional, default `20` |
 
+For a public deployment, also set `DJ_MAX_SESSION_S` (for example `600`) as an **agent** secret
+(`lk agent update-secrets`) so every session ends on its own.
+
 Check it: `curl -XPOST https://<your-deployment>/api/token -d '{}'` should return 201
 with `server_url` and `participant_token`.

@@ -44,6 +44,9 @@ LYRIA_LOG_FILE = os.getenv("LYRIA_LOG_FILE")
 REPROMPT_KEEP_S = float(os.getenv("LYRIA_REPROMPT_KEEP_S", "2.0"))
 # Higher follows prompts more closely (Lyria default 4.0, max 6.0).
 GUIDANCE = float(os.getenv("LYRIA_GUIDANCE", "5.0"))
+# Give up (and tell the listener) after this many failed connects in a row
+# without ever getting a session, e.g. quota exhausted or the model unavailable.
+MAX_CONNECT_FAILURES = int(os.getenv("LYRIA_MAX_CONNECT_FAILURES", "3"))
 
 # Lyria drifts to solo piano when prompts are vague or moods dominate, so every
 # mix carries a small negative-weight "piano" prompt unless the caller asked for
@@ -97,6 +100,8 @@ class LyriaDJ:
         self.last_filtered: tuple[str, str] | None = None
         # Called once per rejected tag with (text, reason). Assignable after init.
         self.on_filtered = on_filtered
+        # Called once if Lyria can't be reached at all (see MAX_CONNECT_FAILURES).
+        self.on_unavailable: Callable[[], None] | None = None
         # Tags Lyria rejected since the last set_prompts(); kept out of resends.
         self._rejected: set[str] = set()
         self._api_key = api_key or os.getenv("GOOGLE_API_KEY")
@@ -131,6 +136,7 @@ class LyriaDJ:
         # Off the event loop: client creation builds an SSL context (~100-300 ms).
         client = self._client or await asyncio.to_thread(make_client, self._api_key)
         backoff = 1.0
+        failures = 0
         while not self._closed:
             try:
                 async with client.aio.live.music.connect(model=MODEL) as session:
@@ -138,6 +144,7 @@ class LyriaDJ:
                     await self._apply_state(session)
                     self._ready.set()
                     backoff = 1.0
+                    failures = 0
                     logger.info("lyria session up (%s)", API_VERSION)
                     await asyncio.wait_for(
                         self._receive(session), timeout=SESSION_MAX_S
@@ -147,6 +154,11 @@ class LyriaDJ:
             except asyncio.CancelledError:
                 raise
             except Exception:
+                failures += 1
+                if failures >= MAX_CONNECT_FAILURES and self.on_unavailable:
+                    logger.exception("lyria unavailable after %d attempts", failures)
+                    self.on_unavailable()
+                    return
                 logger.exception("lyria session failed; reconnecting in %.0fs", backoff)
                 await asyncio.sleep(backoff)
                 backoff = min(backoff * 2, 10.0)

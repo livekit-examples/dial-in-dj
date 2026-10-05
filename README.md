@@ -189,8 +189,10 @@ in [docs/SETUP.md](docs/SETUP.md).
   `ALLOW_OUTBOUND_CALLS=1` and `SIP_OUTBOUND_TRUNK_ID` are set. Never expose outbound dispatch
   through a public endpoint, because anyone could make it call any number at your expense.
 - **Every session costs money.** Each call or browser session uses agent time, LiveKit
-  Inference and a Lyria stream. Lyria RealTime's quotas aren't documented, so set limits
-  that fit your budget.
+  Inference and a Lyria stream. Set `DJ_MAX_SESSION_S` so an idle tab can't hold a session
+  forever, and cap your agent deployment's replicas. Lyria RealTime's quotas aren't documented;
+  if it can't be reached, the DJ says so and ends the session, and the page shows "The DJ is
+  busy" when no agent joins within 20 seconds.
 - **Phone numbers end up in room names** (`dj-_<caller>_<random>`). Treat logs and room lists
   as personal data.
 
@@ -210,6 +212,8 @@ All of these are environment variables, so you can change them without editing c
 | `LYRIA_LOG_FILE` | unset | Also append every Lyria command to this JSONL file |
 | `DJ_LLM` | `google/gemma-4-31b-it` | LLM for `pipeline` mode (LiveKit Inference model string) |
 | `DJ_MAX_CTX_ITEMS` | `12` | Chat history kept per call, to keep each LLM request small |
+| `DJ_MAX_SESSION_S` | `0` (no limit) | End each session after this many seconds with a short goodbye. Set it for public deployments |
+| `LYRIA_MAX_CONNECT_FAILURES` | `3` | Failed Lyria connects in a row before the DJ apologizes and ends the session |
 | `GEMINI_LIVE_MODEL` / `GEMINI_VOICE` | `gemini-3.1-flash-live-preview` / `Puck` | Model and voice for `gemini` mode |
 
 The ducking levels (`DUCK_AGENT_SPEAKING`, `DUCK_USER_SPEAKING`) are constants at the top
