@@ -133,7 +133,8 @@ function caption(el, text) {
 }
 
 // ---------- Session ----------
-const DJ_JOIN_TIMEOUT_MS = 20000;
+const DJ_SLOW_JOIN_MS = 8000; // update the status so the wait doesn't look stuck
+const DJ_JOIN_TIMEOUT_MS = 20000; // then give up with "the DJ is busy"
 let room = null;
 let mode = "idle"; // idle | web
 let micBlocked = false;
@@ -253,8 +254,14 @@ $("talk-btn").addEventListener("click", async () => {
     // If no DJ is free to join (all busy, or the service is down), say so instead
     // of leaving the visitor waiting in an empty room.
     const joined = room;
+    const djHere = () => [...room.remoteParticipants.values()].some(isAgent);
     setTimeout(() => {
-      if (room === joined && mode === "web" && ![...room.remoteParticipants.values()].some(isAgent)) {
+      if (room === joined && mode === "web" && !djHere() && !micBlocked) {
+        setStatus("Still looking for a free DJ…", "wait");
+      }
+    }, DJ_SLOW_JOIN_MS);
+    setTimeout(() => {
+      if (room === joined && mode === "web" && !djHere()) {
         leave("The DJ is busy right now. Please try again in a minute.", "error");
       }
     }, DJ_JOIN_TIMEOUT_MS);
