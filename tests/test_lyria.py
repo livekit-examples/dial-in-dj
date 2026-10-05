@@ -1,3 +1,5 @@
+import asyncio
+
 from dj.lyria import LyriaDJ
 
 
@@ -79,3 +81,32 @@ async def test_every_send_is_logged(caplog):
     ]
     assert sent[-1]["op"] == "set_weighted_prompts"
     assert sent[-1]["prompts"]["hard rock"] == 1.0 and sent[-1]["prompts"]["piano"] < 0
+
+
+async def test_unavailable_fires_once_after_repeated_connect_failures(monkeypatch):
+    import dj.lyria as lyria
+
+    monkeypatch.setattr(lyria, "MAX_CONNECT_FAILURES", 2)
+    real_sleep = asyncio.sleep
+    monkeypatch.setattr(lyria.asyncio, "sleep", lambda _s: real_sleep(0))
+
+    class FailingConnect:
+        async def __aenter__(self):
+            raise ConnectionError("quota exhausted")
+
+        async def __aexit__(self, *a):
+            return False
+
+    class FakeClient:
+        class aio:  # noqa: N801
+            class live:  # noqa: N801
+                class music:  # noqa: N801
+                    @staticmethod
+                    def connect(model):
+                        return FailingConnect()
+
+    dj = LyriaDJ(api_key="unused", client=FakeClient())
+    calls = []
+    dj.on_unavailable = lambda: calls.append(1)
+    await asyncio.wait_for(dj._run(), timeout=2)
+    assert calls == [1]

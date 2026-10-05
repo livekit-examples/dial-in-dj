@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import os
@@ -157,6 +158,9 @@ def layer_mix(prompts: dict[str, float], tag: str, prominence: str) -> dict[str,
 # needs recent requests, not the whole call; the current mix is re-stated each
 # turn instead, so trimming never loses musical state.
 MAX_CTX_ITEMS = int(os.getenv("DJ_MAX_CTX_ITEMS", "12"))
+# End each session after this many seconds (0 = no limit). Set it for public
+# deployments so an open browser tab can't hold a DJ and a Lyria stream forever.
+MAX_SESSION_S = float(os.getenv("DJ_MAX_SESSION_S", "0"))
 CTX_TRIM_SLACK = 8
 
 # Zero-width and other invisible characters. The LLM sometimes "stays silent"
@@ -504,8 +508,45 @@ async def dial_in_dj(ctx: JobContext):
             "a few words. Do not mention filters or errors."
         )
 
+    started = asyncio.Event()
+    ending: set[asyncio.Task] = set()
+
+    async def _end_set(reason: str, line: str) -> None:
+        """Say a last line, fade the music, then close the room for everyone."""
+        logger.info("ending session: %s", reason)
+        try:
+            await asyncio.wait_for(started.wait(), timeout=20)
+            if PIPELINE != "direct":
+                handle = session.generate_reply(instructions=line)
+                await asyncio.wait_for(handle.wait_for_playout(), timeout=15)
+            dj.ducker.target = 0.0
+            await asyncio.sleep(1.5)
+        except Exception:
+            logger.debug("could not finish the closing line", exc_info=True)
+        try:
+            await ctx.delete_room()
+        except Exception:
+            logger.warning("delete_room failed; shutting down", exc_info=True)
+            ctx.shutdown(reason=reason)
+
+    def _end_soon(reason: str, line: str) -> None:
+        if not ending:
+            task = asyncio.create_task(_end_set(reason, line))
+            ending.add(task)
+
+    async def _cancel_ending() -> None:
+        for task in ending:
+            task.cancel()
+
+    ctx.add_shutdown_callback(_cancel_ending)
+
     # Start Lyria before dialing: its cold start (3-10 s) overlaps the ringing.
     dj.on_filtered = _on_filtered
+    dj.on_unavailable = lambda: _end_soon(
+        "music unavailable",
+        "Apologize in one short sentence: the music generator is unavailable right "
+        "now, so the listener should try again in a few minutes.",
+    )
     dj.start()
 
     await ctx.connect()
@@ -526,7 +567,35 @@ async def dial_in_dj(ctx: JobContext):
     background = BackgroundAudioPlayer()
     await background.start(room=ctx.room, agent_session=session)
     background.play(dj.frames())
-    ctx.add_shutdown_callback(background.aclose)
+
+    async def _close_background() -> None:
+        # By shutdown the room is usually gone, and unpublishing the music track
+        # from a disconnected room never completes (livekit-agents 1.8.3), which
+        # kept every job alive until it was killed 10 s later. Bound it.
+        try:
+            await asyncio.wait_for(background.aclose(), timeout=2)
+        except TimeoutError:
+            logger.debug("background audio close timed out; room already gone")
+
+    ctx.add_shutdown_callback(_close_background)
+    started.set()
+
+    if MAX_SESSION_S > 0:
+
+        async def _time_limit() -> None:
+            await asyncio.sleep(MAX_SESSION_S)
+            _end_soon(
+                "time limit",
+                "In one short sentence, tell the listener this set is over and "
+                "thank them for listening.",
+            )
+
+        limit = asyncio.create_task(_time_limit())
+
+        async def _cancel_limit() -> None:
+            limit.cancel()
+
+        ctx.add_shutdown_callback(_cancel_limit)
 
 
 if __name__ == "__main__":

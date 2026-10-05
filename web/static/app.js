@@ -1,4 +1,4 @@
-import { Room, RoomEvent, Track } from "livekit-client";
+import { DisconnectReason, Room, RoomEvent, Track } from "livekit-client";
 import { KINDS, createVisualizer, renderThumbnails } from "./visualizer.js";
 
 const $ = (id) => document.getElementById(id);
@@ -133,6 +133,7 @@ function caption(el, text) {
 }
 
 // ---------- Session ----------
+const DJ_JOIN_TIMEOUT_MS = 20000;
 let room = null;
 let mode = "idle"; // idle | web
 let micBlocked = false;
@@ -178,8 +179,10 @@ async function join({ url, token }, { publishMic }) {
       };
       if (words[state] && !micBlocked) setStatus(words[state]);
     })
-    .on(RoomEvent.Disconnected, () => {
-      if (mode !== "idle") leave();
+    .on(RoomEvent.Disconnected, (reason) => {
+      if (mode === "idle") return;
+      // The agent closes the room when the set ends (time limit or no music).
+      leave(reason === DisconnectReason.ROOM_DELETED ? "That's the end of the set. Thanks for listening!" : undefined);
     });
 
   room.registerTextStreamHandler("lk.transcription", async (reader, info) => {
@@ -247,6 +250,14 @@ $("talk-btn").addEventListener("click", async () => {
     const agentHere = [...room.remoteParticipants.values()].some(isAgent);
     if (micBlocked) setStatus("Mic blocked: listening only. Allow the mic to talk.", "wait");
     else if (!agentHere) setStatus("Waiting for the DJ…", "wait");
+    // If no DJ is free to join (all busy, or the service is down), say so instead
+    // of leaving the visitor waiting in an empty room.
+    const joined = room;
+    setTimeout(() => {
+      if (room === joined && mode === "web" && ![...room.remoteParticipants.values()].some(isAgent)) {
+        leave("The DJ is busy right now. Please try again in a minute.", "error");
+      }
+    }, DJ_JOIN_TIMEOUT_MS);
   } catch (e) {
     leave(`Couldn't start: ${e.message}`, "error");
   }
