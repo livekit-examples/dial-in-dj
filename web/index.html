@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Dial-in DJ</title>
+    <link rel="icon" href="/static/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "livekit-client": "https://cdn.jsdelivr.net/npm/livekit-client@2.22.3/dist/livekit-client.esm.mjs"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="blob" aria-hidden="true"></canvas>
+
+    <header class="top">
+      <div class="brand">
+        <div>
+          <div class="brand-name">Dial-in DJ</div>
+          <div class="brand-sub">LiveKit × Lyria RealTime</div>
+        </div>
+      </div>
+      <div class="top-right">
+        <div class="viz-picker">
+          <button
+            id="viz-btn"
+            class="btn btn-glass btn-icon"
+            type="button"
+            aria-label="Change visualizer"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="viz-panel"
+            title="Change visualizer"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M4 4h7v7H4V4Zm9 0h7v7h-7V4ZM4 13h7v7H4v-7Zm9 0h7v7h-7v-7Z"/></svg>
+          </button>
+          <div id="viz-panel" class="viz-panel glass" role="group" aria-label="Visualizers" hidden></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="stage">
+      <div id="captions" class="captions" aria-live="polite">
+        <p id="cap-user" class="cap cap-user"></p>
+        <p id="cap-agent" class="cap cap-agent"></p>
+      </div>
+
+      <div id="controls" class="controls">
+      <section id="dock" class="dock glass">
+        <div id="dock-call" class="dock-col dock-call" hidden>
+          <div class="eyebrow">Call the DJ</div>
+          <a id="number" class="number" href="#"></a>
+          <div id="call-msg" class="hint" role="status">Say what you want to hear. Talk again to change it.</div>
+        </div>
+
+        <div id="dock-divider" class="divider" aria-hidden="true" hidden></div>
+
+        <div class="dock-col dock-web">
+          <div class="eyebrow">Or right here</div>
+          <button id="talk-btn" class="btn btn-glass btn-wide" type="button">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/>
+            </svg>
+            Talk in browser
+          </button>
+          <div id="web-msg" class="hint" role="status">Uses your mic. Full-quality audio.</div>
+        </div>
+      </section>
+
+      <section id="bar" class="bar glass is-off" inert aria-hidden="true">
+        <span id="dot" class="dot"></span>
+        <span id="status" class="status">Connecting…</span>
+        <div class="bar-actions">
+          <button id="mic-btn" class="btn btn-glass btn-icon" type="button" aria-pressed="true" aria-label="Microphone" title="Mute mic" hidden>
+            <svg class="icon-on" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg>
+            <svg class="icon-off" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M15 10.6V6a3 3 0 0 0-5.9-.8L15 10.6Zm4 1.4h-2a5 5 0 0 1-.6 2.4l1.5 1.5A7 7 0 0 0 19 12ZM3.3 3.3 2 4.6l7 7V12a3 3 0 0 0 4.6 2.5l1.5 1.5A5 5 0 0 1 7 12H5a7 7 0 0 0 6 6.9V21h2v-2.1a7 7 0 0 0 3.5-1.5l2.9 2.9 1.3-1.3L3.3 3.3Z"/></svg>
+          </button>
+          <button id="spk-btn" class="btn btn-glass btn-icon" type="button" aria-pressed="true" aria-label="Speaker" title="Mute speaker">
+            <svg class="icon-on" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg>
+            <svg class="icon-off" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4Zm12.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7Z"/></svg>
+          </button>
+          <button id="end-btn" class="btn btn-end" type="button">Leave</button>
+        </div>
+      </section>
+      </div>
+    </main>
+
+    <script type="module" src="/static/app.js"></script>
+  </body>
+</html>

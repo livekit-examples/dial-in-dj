@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="ahm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+    <style>
+      .zone-t { font-size: 20px; font-weight: 700; }
+      .zone-s { font-size: 13px; fill: #475569; }
+      .card { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .t { font-size: 17px; font-weight: 700; fill: #0f172a; }
+      .b { font-size: 14px; fill: #1e293b; }
+      .tech { font-size: 11.5px; fill: #64748b; font-family: ui-monospace, Menlo, Consolas, monospace; }
+      .lbl { font-size: 13.5px; font-weight: 600; fill: #334155; }
+      .lblm { font-size: 13.5px; font-weight: 600; fill: #6d28d9; }
+      .pill { fill: #ffffff; stroke: none; }
+      .arrow { stroke: #334155; stroke-width: 2.5; fill: none; }
+      .music { stroke: #7c3aed; stroke-width: 3; fill: none; }
+      .dash { stroke-dasharray: 7 6; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#f8fafc"/>
+  <g transform="translate(100,0)">
+  <text x="700" y="44" text-anchor="middle" font-size="30" font-weight="800" fill="#0f172a">How Dial-in DJ works</text>
+  <text x="700" y="72" text-anchor="middle" font-size="15" fill="#475569">Call a number, say what you want to hear, and an AI DJ plays it. Talk again any time and the music changes.</text>
+
+  <!-- ===== ZONES ===== -->
+  <!-- People -->
+  <rect x="20" y="100" width="230" height="620" rx="18" fill="#ecfeff" stroke="#67e8f9" stroke-width="2"/>
+  <text x="135" y="130" text-anchor="middle" class="zone-t" fill="#0e7490">People</text>
+  <!-- Phone network -->
+  <rect x="262" y="150" width="186" height="150" rx="18" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+  <text x="355" y="178" text-anchor="middle" class="zone-t" fill="#334155" style="font-size:16px">Phone network</text>
+  <!-- LiveKit Cloud -->
+  <rect x="460" y="100" width="560" height="620" rx="18" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <text x="740" y="130" text-anchor="middle" class="zone-t" fill="#1d4ed8">☁️ LiveKit Cloud</text>
+  <text x="740" y="150" text-anchor="middle" class="zone-s">hosted by LiveKit · your Cloud project</text>
+  <!-- Google -->
+  <rect x="1050" y="230" width="330" height="270" rx="18" fill="#f5f3ff" stroke="#a78bfa" stroke-width="2"/>
+  <text x="1215" y="260" text-anchor="middle" class="zone-t" fill="#6d28d9">🟪 Google</text>
+  <text x="1215" y="280" text-anchor="middle" class="zone-s">hosted by Google · Gemini API</text>
+  <!-- GitHub -->
+  <rect x="1050" y="560" width="330" height="160" rx="18" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/>
+  <text x="1215" y="590" text-anchor="middle" class="zone-t" fill="#15803d">🧑‍💻 The code</text>
+
+  <!-- ===== CARDS ===== -->
+  <!-- Caller -->
+  <rect x="40" y="150" width="190" height="130" rx="12" class="card"/>
+  <text x="135" y="190" text-anchor="middle" font-size="30">📱</text>
+  <text x="135" y="220" text-anchor="middle" class="t">Phone caller</text>
+  <text x="135" y="242" text-anchor="middle" class="b">any phone, no app</text>
+  <text x="135" y="262" text-anchor="middle" class="tech">calls your LiveKit number</text>
+  <!-- Browser -->
+  <rect x="40" y="330" width="190" height="110" rx="12" class="card"/>
+  <text x="135" y="368" text-anchor="middle" font-size="30">🎧</text>
+  <text x="135" y="396" text-anchor="middle" class="t">Browser listener</text>
+  <text x="135" y="418" text-anchor="middle" class="b">demo page, best sound</text>
+  <!-- Developer -->
+  <rect x="40" y="540" width="190" height="100" rx="12" class="card"/>
+  <text x="135" y="576" text-anchor="middle" font-size="26">🛠️</text>
+  <text x="135" y="602" text-anchor="middle" class="t">Developer</text>
+  <text x="135" y="622" text-anchor="middle" class="b">tests &amp; watches logs</text>
+
+  <!-- Carrier -->
+  <text x="355" y="215" text-anchor="middle" font-size="26">📶</text>
+  <text x="355" y="243" text-anchor="middle" class="b">the caller's carrier</text>
+  <text x="355" y="263" text-anchor="middle" class="tech">phone-quality audio</text>
+  <text x="355" y="279" text-anchor="middle" class="tech">(mono, speech band)</text>
+
+  <!-- Phone number -->
+  <rect x="480" y="170" width="230" height="90" rx="12" class="card"/>
+  <text x="595" y="200" text-anchor="middle" class="t">☎️ The phone number</text>
+  <text x="595" y="222" text-anchor="middle" class="b">answers the call</text>
+  <text x="595" y="244" text-anchor="middle" class="tech">LiveKit Phone Number</text>
+  <!-- Routing -->
+  <rect x="480" y="290" width="230" height="90" rx="12" class="card"/>
+  <text x="595" y="320" text-anchor="middle" class="t">🔀 Call routing</text>
+  <text x="595" y="342" text-anchor="middle" class="b">gives each caller a private room</text>
+  <text x="595" y="364" text-anchor="middle" class="tech">SIP dispatch rule</text>
+  <!-- Room -->
+  <rect x="480" y="410" width="230" height="140" rx="12" fill="#dbeafe" stroke="#3b82f6" stroke-width="2.5"/>
+  <text x="595" y="444" text-anchor="middle" class="t">🎙️ The live room</text>
+  <text x="595" y="468" text-anchor="middle" class="b">where the caller, the DJ</text>
+  <text x="595" y="488" text-anchor="middle" class="b">and the music meet in real time</text>
+  <text x="595" y="514" text-anchor="middle" class="tech">LiveKit room (WebRTC)</text>
+  <text x="595" y="532" text-anchor="middle" class="tech">one per call</text>
+  <!-- Agent Console -->
+  <rect x="480" y="585" width="230" height="110" rx="12" class="card"/>
+  <text x="595" y="615" text-anchor="middle" class="t">🖥️ Agent Console</text>
+  <text x="595" y="637" text-anchor="middle" class="b">test page for developers</text>
+  <text x="595" y="657" text-anchor="middle" class="b">(your project members)</text>
+  <text x="595" y="679" text-anchor="middle" class="tech">cloud.livekit.io dashboard</text>
+
+  <!-- Speech tools -->
+  <rect x="760" y="170" width="240" height="160" rx="12" class="card"/>
+  <text x="880" y="200" text-anchor="middle" class="t">🗣️ Speech tools</text>
+  <text x="780" y="228" class="b">👂 Ears: speech → text</text>
+  <text x="780" y="252" class="b">🧠 Brain: understands you</text>
+  <text x="780" y="276" class="b">🔊 Voice: text → speech</text>
+  <text x="880" y="302" text-anchor="middle" class="tech">LiveKit Inference: AssemblyAI,</text>
+  <text x="880" y="318" text-anchor="middle" class="tech">Gemma LLM, Fish Audio</text>
+  <!-- DJ agent -->
+  <rect x="760" y="370" width="240" height="325" rx="12" fill="#fff7ed" stroke="#fb923c" stroke-width="2.5"/>
+  <text x="880" y="404" text-anchor="middle" font-size="30">🤖</text>
+  <text x="880" y="436" text-anchor="middle" class="t">The DJ (AI agent)</text>
+  <text x="778" y="466" class="b">• listens for your requests</text>
+  <text x="778" y="490" class="b">• turns "funky disco with a</text>
+  <text x="792" y="510" class="b">sax" into music instructions</text>
+  <text x="778" y="534" class="b">• blends changes smoothly</text>
+  <text x="778" y="558" class="b">• lowers the music when</text>
+  <text x="792" y="578" class="b">anyone talks</text>
+  <text x="778" y="602" class="b">• ignores side chatter</text>
+  <text x="778" y="626" class="b">• logs every instruction</text>
+  <text x="880" y="656" text-anchor="middle" class="tech">LiveKit Agents (Python)</text>
+  <text x="880" y="674" text-anchor="middle" class="tech">deployed with lk agent deploy</text>
+
+  <!-- Lyria -->
+  <rect x="1070" y="300" width="290" height="180" rx="12" class="card"/>
+  <text x="1215" y="336" text-anchor="middle" font-size="30">🎹</text>
+  <text x="1215" y="368" text-anchor="middle" class="t">Lyria: the music maker</text>
+  <text x="1215" y="392" text-anchor="middle" class="b">composes brand-new music live,</text>
+  <text x="1215" y="412" text-anchor="middle" class="b">nonstop, and changes style</text>
+  <text x="1215" y="432" text-anchor="middle" class="b">within about 2 seconds</text>
+  <text x="1215" y="460" text-anchor="middle" class="tech">Lyria RealTime (instrumental only)</text>
+
+  <!-- GitHub -->
+  <text x="1215" y="620" text-anchor="middle" class="b">stored on GitHub; one command</text>
+  <text x="1215" y="642" text-anchor="middle" class="b">ships a new version to the cloud</text>
+  <text x="1215" y="672" text-anchor="middle" class="tech">this repository</text>
+  <text x="1215" y="690" text-anchor="middle" class="tech">lk agent deploy · web/ on any Python host</text>
+
+  <!-- ===== ARROWS ===== -->
+  <!-- caller <-> carrier -->
+  <path d="M230,215 L260,215" class="arrow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <!-- carrier <-> number -->
+  <path d="M448,215 L478,215" class="arrow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <rect x="236" y="120" width="190" height="24" rx="12" class="pill"/>
+  <text x="331" y="137" text-anchor="middle" class="lbl">① you call, you talk</text>
+  <!-- number -> routing -> room -->
+  <path d="M595,260 L595,288" class="arrow" marker-end="url(#ah)"/>
+  <path d="M595,380 L595,408" class="arrow" marker-end="url(#ah)"/>
+  <text x="603" y="400" class="lbl">②</text>
+  <!-- room <-> DJ -->
+  <path d="M712,462 L758,462" class="arrow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <text x="735" y="446" text-anchor="middle" font-size="15">🗣️</text>
+  <!-- DJ <-> speech -->
+  <path d="M880,368 L880,332" class="arrow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <rect x="888" y="340" width="120" height="22" rx="11" class="pill"/>
+  <text x="894" y="356" class="lbl">③ hear, think, talk</text>
+  <!-- DJ -> Lyria instructions -->
+  <path d="M1002,430 C1030,430 1040,410 1068,410" class="music" marker-end="url(#ahm)"/>
+  <!-- Lyria -> DJ music -->
+  <path d="M1068,450 C1040,450 1030,480 1002,480" class="music" marker-end="url(#ahm)"/>
+  <rect x="1010" y="508" width="200" height="44" rx="10" class="pill"/>
+  <text x="1016" y="524" class="lblm">④ instructions go out,</text>
+  <text x="1016" y="544" class="lblm">fresh music streams back</text>
+  <!-- music back to the room + caller -->
+  <path d="M758,512 L712,512" class="music" marker-end="url(#ahm)"/>
+  <text x="735" y="536" text-anchor="middle" font-size="16">🎵</text>
+  <!-- browser -> room -->
+  <path d="M230,385 C360,385 380,480 478,480" class="arrow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <rect x="262" y="318" width="190" height="42" rx="10" class="pill"/>
+  <text x="270" y="334" class="lbl">talk in the browser</text>
+  <text x="270" y="352" class="lbl">(full-quality sound)</text>
+  <!-- developer -> console -->
+  <path d="M230,590 C330,590 380,640 478,640" class="arrow dash" marker-end="url(#ah)"/>
+  <!-- console -> room -->
+  <path d="M595,585 L595,552" class="arrow dash" marker-end="url(#ah)"/>
+  <!-- github -> DJ -->
+  <path d="M1048,640 C1030,640 1030,640 1002,640" class="arrow dash" marker-end="url(#ah)"/>
+  <text x="1012" y="630" class="lbl">⑤</text>
+
+  <!-- ===== LEGEND ===== -->
+  <rect x="20" y="745" width="1360" height="135" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="44" y="775" class="t" font-size="16">Reading the map</text>
+  <path d="M230,770 L280,770" class="arrow" marker-end="url(#ah)"/><text x="290" y="775" class="b">voice and control</text>
+  <path d="M450,770 L500,770" class="music" marker-end="url(#ahm)"/><text x="510" y="775" class="b">music</text>
+  <path d="M600,770 L650,770" class="arrow dash" marker-end="url(#ah)"/><text x="660" y="775" class="b">developer tools</text>
+  <text x="800" y="775" class="b">🗣️ voices   🎵 music</text>
+  <text x="44" y="810" class="b">① You call   ② LiveKit answers and opens your private room   ③ The DJ hears and understands you</text>
+  <text x="44" y="836" class="b">④ It tells Lyria what to play, and the new music streams back to you   ⑤ New versions of the DJ ship from GitHub</text>
+  <text x="44" y="862" class="tech">The phone number, the DJ and its speech tools run full-time in LiveKit Cloud; the music is generated by Google's Lyria.</text>
+  </g>
+</svg>

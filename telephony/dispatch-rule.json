@@ -1,0 +1,11 @@
+{
+  "dispatch_rule": {
+    "name": "dial-in-dj",
+    "rule": {
+      "dispatchRuleIndividual": { "roomPrefix": "dj-" }
+    },
+    "roomConfig": {
+      "agents": [{ "agentName": "dial-in-dj" }]
+    }
+  }
+}

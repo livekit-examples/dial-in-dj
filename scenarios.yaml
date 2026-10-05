@@ -1,0 +1,56 @@
+# Simulation scenarios for the Dial-in DJ. Run with
+# `lk agent simulate text --scenarios scenarios.yaml`. The agent still opens a
+# Lyria session, so GOOGLE_API_KEY must be set wherever the agent runs.
+name: Dial-in DJ
+scenarios:
+  - label: Changes the vibe on request
+    instructions: |
+      PERSONA: A caller at a party who wants the music changed.
+      OPENING LINE: "Hey DJ, give me some funky disco."
+      DO, IN ORDER:
+      1. After the DJ confirms, say: "Now make it faster."
+      2. After it confirms, say "Perfect, thanks" and end the conversation.
+    agent_expectations: >
+      Changes the music to a disco or funk style, then raises the tempo.
+      Each confirmation is very short, a few words, in plain spoken prose.
+      Never reads out tool names, weights or other technical values.
+    tags:
+      feature: reprompt
+
+  - label: Handles an artist request without copying
+    instructions: |
+      PERSONA: A fan who asks for a specific band.
+      OPENING LINE: "Play Daft Punk, One More Time."
+      DO, IN ORDER:
+      1. Accept whatever the DJ plays and end the conversation.
+    agent_expectations: >
+      Does not claim to play the actual song or artist. Plays something in a
+      similar style, such as French house or filtered disco, and says so briefly.
+    tags:
+      feature: guardrails
+
+  - label: Stays quiet and brief
+    instructions: |
+      PERSONA: A caller who just wants to listen.
+      OPENING LINE: "Just play something relaxing."
+      DO, IN ORDER:
+      1. After the DJ replies, say "Nice." and end the conversation.
+    agent_expectations: >
+      Starts relaxing music and replies in one short sentence. Does not ask a
+      follow-up question or start a long conversation after "Nice."
+    tags:
+      feature: persona
+
+  - label: Changes the mood, not just the energy
+    instructions: |
+      PERSONA: A caller who wants the feeling of the music to change.
+      OPENING LINE: "Can you make it sadder?"
+      DO, IN ORDER:
+      1. After the DJ confirms, say: "Now make it happy again."
+      2. After it confirms, say "Great" and end the conversation.
+    agent_expectations: >
+      For "sadder", calls set_mood with sad or melancholic mood tags (not only
+      set_energy), and for "happy again" calls set_mood with happy or upbeat
+      tags. Confirmations are a few words and never read out tool names.
+    tags:
+      feature: mood
